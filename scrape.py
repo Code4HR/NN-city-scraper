@@ -15,7 +15,18 @@ base_end = 100000107
  "raw_html": "",
  }
 
-# print(base_url.format(base_num))
+# Tax and Fees Due Model
+{"tax_year": "",
+ "type": "",
+ "cycle": "",
+ "due_date": "",
+ "taxes": "",
+ "penalty": "",
+ "interest": "",
+ "deferred_taxes": "",
+ "balance_due": "",
+ }
+
 
 async def get_body(client, url):
     async with client.get(url) as response:
