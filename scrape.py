@@ -4,11 +4,18 @@ import re
 from bs4 import BeautifulSoup
 
 
-base_url = "http://assessment.nnva.gov/PT/datalets/datalet.aspx?mode=taxes_parent&UseSearch=no&pin={}&jur=700&taxyr=2016&LMparent=20"
-base_num = 100000102
-base_end = 100000103
+base_url = "http://assessment.nnva.gov/PT/Datalets/PrintDatalet.aspx?pin={}&gsp=TAXES_PARENT&taxyear=2016&jur=700&ownseq=0&card=1&roll=REAL&State=1&item=1&items=-1&all=all&ranks=Datalet"
+base_num = 100000101
+base_end = 100000107
 
-print(base_url.format(base_num))
+
+# Parcel model for properties
+{"parcel_id": "",
+ "address": "",
+ "raw_html": "",
+ }
+
+# print(base_url.format(base_num))
 
 async def get_body(client, url):
     async with client.get(url) as response:
@@ -20,16 +27,24 @@ def pull_parcel_info(raw_html):
     soap = BeautifulSoup(raw_html, "lxml")
     # Get the Parcel Head Information
     dataheaders = soap.find_all("td", class_=re.compile("DataletHeaderTop"))
+    if (dataheaders == []):
+        print ("Doesn't Exist Skipping")
+        return None
     parcel['parcel_id'] = dataheaders[0].getText().split("PARID:")[1:]
-    parcel['address'] = dataheaders[1].getText()
-    print(parcel)
-    return True
+    parcel['address'] = dataheaders[1].getText().strip()
+    return parcel
 
+
+# Checks if there is data on file for this parcel number
+def has_data():
+    return False
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     client = aiohttp.ClientSession(loop=loop)
     for url_offset in range(base_end - base_num):
         raw_html = loop.run_until_complete(get_body(client, base_url.format(base_num + url_offset)))
-        pull_parcel_info(raw_html)
+        parcel = pull_parcel_info(raw_html)
+        if parcel:
+            print (parcel)
     client.close()
