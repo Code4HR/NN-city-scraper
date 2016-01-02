@@ -8,6 +8,8 @@ var casper = require("casper").create({
     webSecurityEnabled: false
 });
 
+ var user = casper.cli.get(0);
+ var password = casper.cli.get(1);
 
 var addressUrl = "http://assessment.nnva.gov/PT/search/commonsearch.aspx?mode=address";
 var addresses = [];
@@ -16,9 +18,17 @@ var addresses = [];
 var repeatTimes = 1182;
 var count = 0;
 
+
+// pass in javascript array to change to jsv
+var toCsv = function toCsv(arr ){
+  var csv = arr.join('","').concat("\"");
+  csv = "\"".concat(csv);
+  return csv;
+}
+
 casper.userAgent("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36");
 casper.start(addressUrl, function() {
-   this.echo("click agree ")
+   // this.echo("click agree")
    this.click("#btAgree");
 
    stream = fs.open('nnData.csv', 'r');
@@ -39,8 +49,6 @@ casper.start(addressUrl, function() {
 }).repeat(repeatTimes, function(){
   casper.thenOpen(addressUrl).then(function() {
       // now search for 'phantomjs' by fillin the form again
-      this.echo("filling out address");
-      this.echo(addresses[count]["streetNum"]);
       this.fillSelectors("form", {
         "input[name='inpNumber']": addresses[count]["streetNum"].replace(/"/g,""),
         "input[name='inpStreet']": addresses[count]["street"].replace(/"/g,"")
@@ -53,8 +61,12 @@ casper.start(addressUrl, function() {
       // });
   }).then(function(){
     // Grab the Parcel number from the Reverse Lookup
-    this.echo('evaluating');
-    this.echo(this.evaluate(function(){return document.querySelector(".DataletHeaderTop").querySelector("td").innerText.slice(7)}))
+    var parcelId = this.evaluate(function(){return document.querySelector(".DataletHeaderTop").querySelector("td").innerText.slice(7)});
+    var streetNum = addresses[count]["streetNum"].replace(/"/g,"");
+    var street = addresses[count]["street"].replace(/"/g,"");
+    var name = addresses[count]["owner"].replace(/"/g,"")
+    // Attempt to serialize back to CSV and print out
+    this.echo(toCsv([streetNum, street, name, parcelId]));
   })
   count++;
 }).run(function() {
