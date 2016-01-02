@@ -47,6 +47,18 @@ def pull_parcel_info(raw_html):
         return None
     parcel['parcel_id'] = dataheaders[0].getText().split("PARID:")[1:]
     parcel['address'] = dataheaders[1].getText().strip()
+
+    # check their tax bills
+    rows = soap.find(id="Summary of Taxes and Fees Due").find_all('tr')
+    print (len(rows))
+    # get row
+    for tr in rows:
+        # get columns across
+        # skip the last columns and first header columns
+        row = (tr.find_all('td'))
+        colCheck = row[0].getText().strip()
+        if (colCheck != "Tax Year" and colCheck != "Total:" and colCheck != ""):
+            print(row[0].getText(), len(row[0].getText()))
     return parcel
 
 
