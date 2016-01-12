@@ -1,14 +1,18 @@
 import aiohttp
 import asyncio
+import csv
 import re
+import json
+
 from bs4 import BeautifulSoup
 import psycopg2
 import sys
 
+with open("parcel-points.json", 'r') as parcel_data:
+  parcel_data = json.load(parcel_data)
+
 
 base_url = "http://assessment.nnva.gov/PT/Datalets/PrintDatalet.aspx?pin={}&gsp=TAXES_PARENT&taxyear=2016&jur=700&ownseq=0&card=1&roll=REAL&State=1&item=1&items=-1&all=all&ranks=Datalet"
-base_num = 278000412
-base_end = 278000413
 # lots populated 312020434
 
 # Parcel model for properties
