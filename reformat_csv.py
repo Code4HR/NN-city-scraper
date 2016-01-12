@@ -11,7 +11,7 @@ with open("parcel-points.json", 'r') as parcel_data:
 NUM_OF_RECORDS = len(parcel_data["features"]) - 1
 
 to_save = []
-header =  "{},{},{},{}".format("street_num", "street", "owner", "parcel_id")
+header = "{},{},{},{}".format("street_num", "street", "owner", "parcel_id")
 print()
 
 with open('NN_city_owned_addresses.csv') as csvfile:
@@ -37,12 +37,4 @@ with open('NN_city_owned_addresses.csv') as csvfile:
             to_save.append(item)
             data_str = "{},{},{},{}".format(row["street_num"], row["street"], row["owner"], "@@@@")
             print (data_str)
-
-# with open('formatted.csv', 'w') as csvfile:
-#     fieldnames = ["street_num", "street", "owner", "parcel_id"]
-#     writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-#     writer.writeheader()
-#     for entry in to_save:
-#        writer.writerow({"street_num": row["street_num"], "street": row["street"], "owner": row["owner"], "parcel_id": addr["REISID"]})
-
 
