@@ -72,8 +72,9 @@ def pull_parcel_info(raw_html, prop=None):
         row = (tr.find_all('td'))
         colCheck = row[0].getText().strip()
         if (colCheck != "Tax Year" and colCheck != "Total:" and colCheck != ""):
-            entry = ','.join(str(v.getText()) for v in row)
-            data = "{},{},{},{}".format(parcel['parcel_id'], parcel['address'], prop["owner"], entry)
+            entry = '"'
+            entry = '","'.join(str(v.getText()) for v in row)
+            data = '"{}","{}","{}","{}"'.format(parcel['parcel_id'], parcel['address'], prop["owner"], entry)
             print(data)
     return parcel
 
@@ -96,6 +97,6 @@ if __name__ == '__main__':
         # if parcel:
         #     print (parcel)
     client.close()
-    print ("Could not find, {} properties: {}", len(could_not_find), could_not_find)
-    print ("No Owed Taxes on, {} properties: {}", len(taxes_not_owed), taxes_not_owed)
+    print ("Could not find, {} properties", len(could_not_find))
+    print ("No Owed Taxes on, {} properties", len(taxes_not_owed))
 
